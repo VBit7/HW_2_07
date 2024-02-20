@@ -48,10 +48,12 @@ def select_2(subject_id):
     statement = select(
             Students.full_name,
             Subjects.subject_name,
-            func.round(func.avg(Grades.score), 2).label('avg_score')
+            func.round(func.avg(Grades.score), 2)   #.label('avg_score')
         )\
-        .join(Grades)\
-        .group_by(Students.full_name, Subjects.subject_name)\
+        .join(Grades, Students.id == Grades.student_id)\
+        .join(Subjects, Grades.subject_id == Subjects.id)\
+        .where(Subjects.id == subject_id)\
+        .group_by(Students.full_name, Subjects.subject_name) \
         .order_by(desc(func.avg(Grades.score)))\
         .limit(1)
     print(statement)
@@ -60,11 +62,32 @@ def select_2(subject_id):
         print(row)
 
 
-def select_3():
+def select_3(subject_id):
     """
     3. Знайти середній бал у групах з певного предмета
+
+    select g.group_name, s2.subject_name, ROUND(AVG(g2.score), 2)
+    from "groups" g
+        join students s on g.id = s.group_id
+        join grades g2 on s.id = g2.student_id
+        join subjects s2 on g2.subject_id = s2.id
+    where s2.id = 1
+    group by g.group_name, s2.subject_name
     """
-    pass
+    statement = select(
+            Groups.group_name,
+            Subjects.subject_name,
+            func.round(func.avg(Grades.score), 2))\
+        .join(Students, Groups.id == Students.group_id)\
+        .join(Grades, Students.id == Grades.student_id)\
+        .join(Subjects, Grades.subject_id == Subjects.id)\
+        .where(Subjects.id == subject_id)\
+        .group_by(Groups.group_name, Subjects.subject_name) \
+        .order_by(Groups.group_name)
+    print(statement)
+    result = session.execute(statement).mappings()
+    for row in result:
+        print(row)
 
 
 def select_4():
@@ -133,4 +156,5 @@ def select_12():
 
 if __name__ == '__main__':
     # select_1()
-    select_2(1)
+    # select_2(1)
+    select_3(1)
