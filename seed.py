@@ -1,13 +1,8 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from connect_db import session
 
-from models import Groups, Students, Teachers, Subjects, Grades
 from faker import Faker
+from models import Groups, Students, Teachers, Subjects, Grades
 from random import randint, choice
-
-from config import DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_NAME
-
-DATABASE_URL = f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/{DATABASE_NAME}'
 
 NUMBER_TEACHERS = 5
 NUMBER_SUBJECTS = 8
@@ -15,12 +10,20 @@ NUMBER_GROUPS = 3
 NUMBER_STUDENTS = 50
 NUMBER_GRADES = 20
 
-engine = create_engine(DATABASE_URL)
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
-
 faker = Faker()
 
+fake_subjects = [
+    "Introduction to Computer Science",
+    "Principles of Economics",
+    "Calculus I",
+    "English Composition",
+    "Introduction to Psychology",
+    "World History",
+    "Biology Fundamentals",
+    "Art Appreciation",
+    "Environmental Science",
+    "Business Management Theory"
+]
 
 def db_populate():
     try:
@@ -29,32 +32,27 @@ def db_populate():
             n_group = Groups(group_name=f'Group {i}')
             list_groups.append(n_group)
         session.add_all(list_groups)
-        # session.commit()
 
         list_students = []
         for i in range(1, NUMBER_STUDENTS + 1):
             n_student = Students(full_name=faker.name(), group=choice(list_groups))
             list_students.append(n_student)
         session.add_all(list_students)
-        # session.commit()
 
         list_teachers = []
         for i in range(1, NUMBER_TEACHERS + 1):
             n_teacher = Teachers(full_name=faker.name())
             list_teachers.append(n_teacher)
         session.add_all(list_teachers)
-        # session.commit()
 
         list_subjects = []
         for i in range(1, NUMBER_SUBJECTS + 1):
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!vvvv
             n_subject = Subjects(
-                subject_name=faker.name(),
+                subject_name=choice(fake_subjects),
                 teacher=choice(list_teachers)
             )
             list_subjects.append(n_subject)
         session.add_all(list_subjects)
-        # session.commit()
 
         list_grades = []
         for i in range(1, NUMBER_GRADES * NUMBER_STUDENTS + 1):
