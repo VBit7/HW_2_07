@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, ForeignKey, create_engine, select, and_, or_, not_, desc, func
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base, Mapped, mapped_column
 
-engine = create_engine("sqlite:///:memory:", echo=True)
+engine = create_engine("sqlite:///:memory:", echo=False)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
