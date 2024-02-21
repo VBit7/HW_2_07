@@ -1,7 +1,9 @@
 import argparse
+from sqlalchemy import select, func, desc, and_
+from tabulate import tabulate
 
 from connect_db import session
-from models import Groups, Students, Teachers, Subjects, Grades
+from models import Base, Groups, Students, Teachers, Subjects, Grades
 
 
 def create_model(args):
@@ -9,7 +11,30 @@ def create_model(args):
 
 
 def list_model(args):
-    print(f"Listing all {args.model}s")
+    print(f"Listing all {args.model}")
+    # statement = select(args.model)
+    # print(statement)
+    # result = session.execute(statement).mappings()
+    # # headers = ["Student's Name", "AVG Score"]
+    # # print_result(title, headers, result)
+    # print(tabulate(result))
+
+    # Отримуємо клас моделі за назвою, переданою через args
+    table_name = args.model
+    print(table_name)
+    ModelClass = globals()[table_name]
+
+    # Створюємо запит з використанням класу моделі
+    statement = select(ModelClass)
+    # statement = select(table_name)
+    # print(statement)
+    # Виконуємо запит та отримуємо результат
+    # result = session.execute(statement) #.mappings()
+    result = session.query(ModelClass).all()
+    print(tabulate(result))
+    # # Виводимо дані
+    # for row in result:
+    #     print(row.__dict__)
 
 
 def update_model(args):

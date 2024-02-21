@@ -1,5 +1,4 @@
 from sqlalchemy import select, func, desc, and_
-# from sqlalchemy.orm import join
 from tabulate import tabulate
 
 from connect_db import session
